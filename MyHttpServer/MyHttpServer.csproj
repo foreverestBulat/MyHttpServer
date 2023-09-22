@@ -1,0 +1,107 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="DodoPizza\.git\ms-persist.xml" />
+    <Content Include="DodoPizza\.vs\ProjectSettings.json" />
+    <Content Include="DodoPizza\.vs\VSWorkspaceState.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="DodoPizza\.git\COMMIT_EDITMSG" />
+    <None Include="DodoPizza\.git\config" />
+    <None Include="DodoPizza\.git\description" />
+    <None Include="DodoPizza\.git\FETCH_HEAD" />
+    <None Include="DodoPizza\.git\HEAD" />
+    <None Include="DodoPizza\.git\hooks\applypatch-msg.sample" />
+    <None Include="DodoPizza\.git\hooks\commit-msg.sample" />
+    <None Include="DodoPizza\.git\hooks\fsmonitor-watchman.sample" />
+    <None Include="DodoPizza\.git\hooks\post-update.sample" />
+    <None Include="DodoPizza\.git\hooks\pre-applypatch.sample" />
+    <None Include="DodoPizza\.git\hooks\pre-commit.sample" />
+    <None Include="DodoPizza\.git\hooks\pre-merge-commit.sample" />
+    <None Include="DodoPizza\.git\hooks\pre-push.sample" />
+    <None Include="DodoPizza\.git\hooks\pre-rebase.sample" />
+    <None Include="DodoPizza\.git\hooks\pre-receive.sample" />
+    <None Include="DodoPizza\.git\hooks\prepare-commit-msg.sample" />
+    <None Include="DodoPizza\.git\hooks\push-to-checkout.sample" />
+    <None Include="DodoPizza\.git\hooks\update.sample" />
+    <None Include="DodoPizza\.git\index" />
+    <None Include="DodoPizza\.git\info\exclude" />
+    <None Include="DodoPizza\.git\logs\HEAD" />
+    <None Include="DodoPizza\.git\logs\refs\heads\master" />
+    <None Include="DodoPizza\.git\logs\refs\remotes\origin\master" />
+    <None Include="DodoPizza\.git\objects\02\53149794f8a89a293eec1384b7724747f0ef7e" />
+    <None Include="DodoPizza\.git\objects\05\e5a3c787e463428e2a7cd6c4ed982f6a458457" />
+    <None Include="DodoPizza\.git\objects\08\7e6447435641ab6df71ba3efd4f2fb16bc44f9" />
+    <None Include="DodoPizza\.git\objects\0b\5348a3cbcbbd48583dad74229739654ac5f37d" />
+    <None Include="DodoPizza\.git\objects\0c\2e924759c2562d509a59fd637a397de951a9b5" />
+    <None Include="DodoPizza\.git\objects\18\1edd00d9c3c56fd4c27790793f19c6e5ca1759" />
+    <None Include="DodoPizza\.git\objects\19\00145a062e3db88a423323dda923182ecdb450" />
+    <None Include="DodoPizza\.git\objects\1f\f0c423042b46cb1d617b81efb715defbe8054d" />
+    <None Include="DodoPizza\.git\objects\20\5ab6377fd582ba72c3b6d651a7a8e8ac947c6d" />
+    <None Include="DodoPizza\.git\objects\20\cc30faa4431280563c2698c67508d87257fb40" />
+    <None Include="DodoPizza\.git\objects\2d\79e6278866e386ef801e1d2aa89bfa59686d1a" />
+    <None Include="DodoPizza\.git\objects\2e\c7aa5ca691791f42f59cc0907b50714500ae59" />
+    <None Include="DodoPizza\.git\objects\2f\c189e5e658df09d3d033b9a9ddb77bebcc462f" />
+    <None Include="DodoPizza\.git\objects\41\9c1d57728c6eb8042d4ec15e88df625c6be10a" />
+    <None Include="DodoPizza\.git\objects\49\8f75d8af6d11479e97a6ea7b916a2eb37a2580" />
+    <None Include="DodoPizza\.git\objects\51\ca4e77a123161ea5cdac9d5f9119de53b2a2af" />
+    <None Include="DodoPizza\.git\objects\57\de52e5f4a54dbf6e79541baf75545d801526ab" />
+    <None Include="DodoPizza\.git\objects\5a\0abdb4b4bef2382631f9e6ccfe4707db97e290" />
+    <None Include="DodoPizza\.git\objects\67\5fce8d5f6499e2a5b6ede739142bba9b5cb0c6" />
+    <None Include="DodoPizza\.git\objects\67\ec5a892d6448bbbc4e8e952240b617986ccca9" />
+    <None Include="DodoPizza\.git\objects\6c\d3a15d533948b5865751fd1f920bcddf4ba87b" />
+    <None Include="DodoPizza\.git\objects\70\17af6ef74888ba93124377d90c213b296bd543" />
+    <None Include="DodoPizza\.git\objects\72\cc56cfa3e108095139b16c62984c4ebfda2d40" />
+    <None Include="DodoPizza\.git\objects\74\3549acb399a464062bd65d68fc47db9352be1c" />
+    <None Include="DodoPizza\.git\objects\7d\cf0f54d0bd2cc1e9a43346077dc5d8bda41a3b" />
+    <None Include="DodoPizza\.git\objects\7f\e15a400972a7394a88034a3defbd491b073bb5" />
+    <None Include="DodoPizza\.git\objects\85\e86a2ed9f4e5f55f8e248990d8fad50f55b74b" />
+    <None Include="DodoPizza\.git\objects\87\1fca78292c16b5acc63d58c282c1a61e753c25" />
+    <None Include="DodoPizza\.git\objects\87\a2504595593c83229e504b7546644e694be04b" />
+    <None Include="DodoPizza\.git\objects\90\fe3cf9403608717880f704f898ec290c9854b8" />
+    <None Include="DodoPizza\.git\objects\94\91a2fda28342ab358eaf234e1afe0c07a53d62" />
+    <None Include="DodoPizza\.git\objects\97\451c71ecefd152950d54a2ab452584a6059cdd" />
+    <None Include="DodoPizza\.git\objects\9a\914c206cec713b60f8b85d61c1b81a4eb00da5" />
+    <None Include="DodoPizza\.git\objects\9b\b0eac56973fb2e9a78cd0d2e835ea107f7e22b" />
+    <None Include="DodoPizza\.git\objects\9f\b9db065e426f1a2fcf554fbbdf95fc5ac6db51" />
+    <None Include="DodoPizza\.git\objects\b0\e616aef97a78bea8be668199933cbc8324ca9b" />
+    <None Include="DodoPizza\.git\objects\bb\fbf4104bf99b952d021081a89f23ec45a46b50" />
+    <None Include="DodoPizza\.git\objects\c0\8f464878ad415bf053d63ed9d5263e033f4650" />
+    <None Include="DodoPizza\.git\objects\cf\49386baeb9f51d5aa95ae55f556a45217e625c" />
+    <None Include="DodoPizza\.git\objects\d6\88fb80df85700c9c7f1cc7fb380e19bf4b5f00" />
+    <None Include="DodoPizza\.git\objects\f0\d3a70ceaa69fb70811f58254dc738e0f939eac" />
+    <None Include="DodoPizza\.git\objects\f3\04ec0f068960514d829dd412adf98662f6f942" />
+    <None Include="DodoPizza\.git\objects\f7\61a5525bdec164f93b8d6e319a104ca770c88a" />
+    <None Include="DodoPizza\.git\objects\fc\8a691792289f0e28bc936670a6fc55f7d38a04" />
+    <None Include="DodoPizza\.git\refs\heads\master" />
+    <None Include="DodoPizza\.git\refs\remotes\origin\master" />
+    <None Include="DodoPizza\.vs\slnx.sqlite" />
+    <None Include="DodoPizza\.vs\Додо пицца\config\applicationhost.config" />
+    <None Include="DodoPizza\.vs\Додо пицца\FileContentIndex\3f4fc68e-7aa0-4efb-bd59-f4349d0f3a56.vsidx" />
+    <None Include="DodoPizza\.vs\Додо пицца\FileContentIndex\8b85891c-14a8-4397-a096-ab57752892d5.vsidx" />
+    <None Include="DodoPizza\.vs\Додо пицца\FileContentIndex\read.lock" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DodoPizza\.git\objects\info\" />
+    <Folder Include="DodoPizza\.git\objects\pack\" />
+    <Folder Include="DodoPizza\.git\refs\tags\" />
+    <Folder Include="DodoPizza\.vs\Додо пицца\FileContentIndex\merges\" />
+    <Folder Include="DodoPizza\.vs\Додо пицца\v17\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
