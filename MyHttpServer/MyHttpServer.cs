@@ -53,18 +53,34 @@ public class HttpServer
             HttpListenerRequest request = context.Request;
             response = context.Response;
 
-            //////////////
-            CheckExistFileHTML();
+            // Получить запрашиваемый путь
+            string requestedPath = request.Url.LocalPath;
 
-            site = new StreamReader(path);
+            // Проверить, запрашивается ли файл CSS или изображение
+            if (requestedPath.EndsWith(".css"))
+            {
+                // Отправить файл CSS
+                SendCSSFile(requestedPath);
+            }
+            else if (requestedPath.StartsWith("/images/"))
+            {
+                // Отправить изображение
+                SendImageFile(requestedPath);
+            }
+            else
+            {
+                // Запрос на другие ресурсы, обрабатываем как раньше
+                CheckExistFileHTML();
+                site = new StreamReader(path);
 
-            byte[] buffer = Encoding.UTF8.GetBytes(site.ReadToEnd());
-            response.ContentLength64 = buffer.Length;
+                byte[] buffer = Encoding.UTF8.GetBytes(site.ReadToEnd());
+                response.ContentLength64 = buffer.Length;
 
-            using Stream output = response.OutputStream;
+                using Stream output = response.OutputStream;
                  
-            await output.WriteAsync(buffer);
-            await output.FlushAsync();
+                await output.WriteAsync(buffer);
+                await output.FlushAsync();
+            }
 
             if (!(waitFinish.Status == TaskStatus.Running))
                 break;
@@ -73,6 +89,64 @@ public class HttpServer
         }
         server.Stop();
 
+    }
+
+    private async void SendCSSFile(string filePath)
+    {
+        string fullPath = Path.Combine(Environment.CurrentDirectory, config.StaticPathFiles, filePath.TrimStart('/'));
+        if (File.Exists(fullPath))
+        {
+            byte[] fileBytes = File.ReadAllBytes(fullPath);
+            response.ContentType = "text/css";
+            response.ContentLength64 = fileBytes.Length;
+            using Stream outputStream = response.OutputStream;
+            await outputStream.WriteAsync(fileBytes);
+            await outputStream.FlushAsync();
+        }
+        else
+        {
+            // Если файл не найден, отправляем код ошибки 404 - Not Found
+            response.StatusCode = 404;
+            response.Close();
+        }
+    }
+
+    private string GetImageContentType(string imagePath)
+    {
+        string extension = Path.GetExtension(imagePath).ToLower();
+        switch (extension)
+        {
+            case ".jpg":
+            case ".jpeg":
+                return "image/jpeg";
+            case ".png":
+                return "image/png";
+            case ".svg":
+                return "image/svg+xml";
+            default:
+                return "application/octet-stream"; // Если формат неизвестен, отправляем общий тип содержимого
+        }
+    }
+
+    private async void SendImageFile(string imagePath)
+    {
+        string fullPath = Path.Combine(Environment.CurrentDirectory, "static", imagePath.TrimStart('/'));
+        if (File.Exists(fullPath))
+        {
+            byte[] imageBytes = File.ReadAllBytes(fullPath);
+            string contentType = GetImageContentType(fullPath);
+            response.ContentType = contentType;
+            response.ContentLength64 = imageBytes.Length;
+            using Stream outputStream = response.OutputStream;
+            await outputStream.WriteAsync(imageBytes);
+            await outputStream.FlushAsync();
+        }
+        else
+        {
+            // Если файл не найден, отправляем код ошибки 404 - Not Found
+            response.StatusCode = 404;
+            response.Close();
+        }
     }
 
     private void CheckExistFileHTML()
@@ -138,7 +212,23 @@ public class HttpServer
 
 
 
+//////////////
+//CheckExistFileHTML();
 
+//site = new StreamReader(path);
+
+//byte[] buffer = Encoding.UTF8.GetBytes(site.ReadToEnd());
+//response.ContentLength64 = buffer.Length;
+
+//using Stream output = response.OutputStream;
+
+//await output.WriteAsync(buffer);
+//await output.FlushAsync();
+
+//if (!(waitFinish.Status == TaskStatus.Running))
+//    break;
+
+//Console.WriteLine("Запрос обработан");
 
 //Console.WriteLine("URL: {0}", context.Request.Url.OriginalString);
 //Console.WriteLine("Raw URL: {0}", context.Request.RawUrl);
