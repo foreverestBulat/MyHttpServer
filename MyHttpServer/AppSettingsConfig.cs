@@ -10,5 +10,6 @@ namespace MyHttpServer
     {
         public int Port { get; set; }
         public string Address { get; set; }
+        public string StaticPathFiles { get; set; }
     }
 }

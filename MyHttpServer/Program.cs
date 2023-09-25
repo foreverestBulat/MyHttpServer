@@ -5,16 +5,39 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 
-void Wait()
+namespace MyHttpServer;
+
+public class Program
 {
-    while (true)
+    public static void Main()
     {
-        var input = Console.ReadLine();
-        if (input == "stop")
-            break;
+        var server = new HttpServer();
+        server.Start();
     }
-    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //using (FileStream file = File.OpenRead("appsetting.json"))
@@ -23,44 +46,54 @@ void Wait()
 //}
 
 
-var server = new HttpListener();
-// установка адресов прослушки
-server.Prefixes.Add("http://127.0.0.1:2323/");
-server.Start(); // начинаем прослушивать входящие подключения
 
-Task wait = new Task(() => Wait());
-wait.Start();
+//var server = new HttpListener();
+//// установка адресов прослушки
+//server.Prefixes.Add("http://127.0.0.1:2323/");
+//server.Start(); // начинаем прослушивать входящие подключения
 
-Console.WriteLine(wait.Status);
+//Task wait = new Task(() => Wait());
+//wait.Start();
 
-while (wait.Status == TaskStatus.Running)
-{
-    var context = await server.GetContextAsync();
-    Console.WriteLine(wait.Status);
+//Console.WriteLine(wait.Status);
 
-    var response = context.Response;
+//while (wait.Status == TaskStatus.Running)
+//{
+//    var context = await server.GetContextAsync();
+//    Console.WriteLine(wait.Status);
 
-    var path = "C:/Users/Admin/Desktop/ОРИС/Додо пицца/main.html";
-    // отправляемый в ответ код htmlвозвращает
-    var site = new StreamReader(path);
-    // получаем поток ответа и пишем в него ответ
+//    var response = context.Response;
 
-    byte[] buffer = Encoding.UTF8.GetBytes(site.ReadToEnd());
-    response.ContentLength64 = buffer.Length;
+//    var path = "C:/Users/Admin/Desktop/ОРИС/static/main.html";
+//    // отправляемый в ответ код htmlвозвращает
+//    var site = new StreamReader(path);
+//    // получаем поток ответа и пишем в него ответ
 
-    using Stream output = response.OutputStream;
-    // отправляем данные
-    await output.WriteAsync(buffer);
-    await output.FlushAsync();
+//    byte[] buffer = Encoding.UTF8.GetBytes(site.ReadToEnd());
+//    response.ContentLength64 = buffer.Length;
 
-    Console.WriteLine("Запрос обработан");
-    if (!(wait.Status == TaskStatus.Running))
-        break;
-}
-server.Stop();
+//    using Stream output = response.OutputStream;
+//    // отправляем данные
+//    await output.WriteAsync(buffer);
+//    await output.FlushAsync();
+
+//    Console.WriteLine("Запрос обработан");
+//    if (!(wait.Status == TaskStatus.Running))
+//        break;
+//}
+//server.Stop();
 
 
+//void Wait()
+//{
+//    while (true)
+//    {
+//        var input = Console.ReadLine();
+//        if (input == "stop")
+//            break;
+//    }
 
+//}
 
 
 
