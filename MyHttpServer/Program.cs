@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Text.Json;
 
@@ -13,6 +14,20 @@ public class Program
     {
         var server = new HttpServer();
         server.Start();
+
+        //var mail = EmailSenderServis.CreateMail("Bulatic", "bulatsubuh@gmail.com", "bulatsubuh@gmail.com", "subject", "body");
+        //EmailSenderServis.SendMail("127.0.0.1", 587, "bulatsubuh@gmail.com", "rwha zzei jwtv bvof", mail);
+
+        //MailAddress from = new MailAddress("bulatsubuh@gmail.com", "Bulat");
+        //MailAddress to = new MailAddress("islam.bagaviev.2014@mail.ru");
+        //MailMessage m = new MailMessage(from, to);
+        //m.Subject = "Отправка с помощью C#";
+        //m.Body = "пашли в магаз пашли в магаз пашли в магаз";
+        //SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+        //smtp.Credentials = new NetworkCredential("bulatsubuh@gmail.com", "rwha zzei jwtv bvof");
+        //smtp.EnableSsl = true;
+        //smtp.Send(m);
+        //Console.WriteLine("Письмо отправлено");
     }
 }
 
