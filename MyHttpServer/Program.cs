@@ -12,8 +12,14 @@ public class Program
 {
     public static void Main()
     {
+
+        //HttpServer.ParsingSteam();
+
+
         var server = new HttpServer();
         server.Start();
+
+
 
         //var mail = EmailSenderServis.CreateMail("Bulatic", "bulatsubuh@gmail.com", "bulatsubuh@gmail.com", "subject", "body");
         //EmailSenderServis.SendMail("127.0.0.1", 587, "bulatsubuh@gmail.com", "rwha zzei jwtv bvof", mail);

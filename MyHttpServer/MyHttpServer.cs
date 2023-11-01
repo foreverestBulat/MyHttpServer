@@ -1,12 +1,17 @@
 ﻿
+using MyHttpServer.Handlers;
+using MyHttpServer.Services.EmailSender;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Mail;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MyHttpServer;
 
@@ -21,10 +26,11 @@ namespace MyHttpServer;
 //  2) добавить параметры в абсетингс.джейсон, а именно emailsander, passwordsender, fromName, htttserverhost/port
 //  3) в EmailsSenderService(класс) получать данные из конфига
 //  4) handlings Ihandler, Handler (HTTPContext context)
-//  5)StaticFilesHandler добавить и перенести сюда логика работы с папкой статик
+//  5) StaticFilesHandler добавить и перенести сюда логика работы с папкой статик
 //  6) подставить в listening StaticFilesHandler его вызвать
 
-public class HttpServer : IDisposable
+
+public class HttpServer 
 {
     internal HttpListener server;
     internal Task startServer;
@@ -34,7 +40,7 @@ public class HttpServer : IDisposable
     internal CancellationTokenSource cts = new();
     internal HttpListenerRequest request;
     internal string path;                // = "C:/Users/Admin/Desktop/ОРИС/static/main.html";
-    internal AppSettingsConfig config;
+    public AppSettingsConfig config;
 
     public HttpServer()
     {
@@ -53,11 +59,9 @@ public class HttpServer : IDisposable
 
     private async void Run()
     {
-        //var config = await GetConnectionConfigurationServer("appsettings.json");
-
         GetConfig("appsettings.json");
 
-        server.Prefixes.Add($"{config.Address}:{config.Port}/");        // "http://127.0.0.1:2323/"
+        server.Prefixes.Add($"{config.Address}:{config.Port}/"); //($"{config.Address}:{config.Port}/");        // "http://127.0.0.1:2323/"
 
         Console.WriteLine("Запуск сервера");
         server.Start();
@@ -65,32 +69,30 @@ public class HttpServer : IDisposable
         while (true)
         {
             context = await server.GetContextAsync();
+
+            //Handler staticFilesHandler = new StaticFileHandlers(config);
+            //Handler controllerHandler = new ControllerHandler();
+            //staticFilesHandler.Successor = controllerHandler;
+            //staticFilesHandler.HandleRequest(context);
+
             request = context.Request;
             response = context.Response;
-
 
             if (request.HttpMethod == "POST")
             {
                 string dataString;
-                string name;
-                string lastname;
-                string birthday;
-                string phone;
-
-
 
                 using (var reader = new StreamReader(request.InputStream))
                 {
                     dataString = reader.ReadToEnd();
                 }
 
-
                 var datas = dataString.Split('&');
-                name = datas[0].Split('=')[1];
-                lastname = datas[1].Split('=')[1];
-                birthday = datas[2].Split('=')[1];
-                phone = datas[3].Split('=')[1];
-
+                string name = datas[0].Split('=')[1];
+                string lastname = datas[1].Split('=')[1];
+                string birthday = datas[2].Split('=')[1];
+                string phone = datas[3].Split('=')[1];
+                string toMail = datas[4].Split('=')[1];
                 var subject = "Метод HOST";
 
                 string body = $"{name}\n" +
@@ -98,23 +100,27 @@ public class HttpServer : IDisposable
                     $"{birthday}\n" +
                     $"{phone}";
 
-                var mail = EmailSenderServis.CreateMail
-                    (name, config.EmailFrom, config.EmailTo, subject, body);
-                EmailSenderServis.SendMail
-                    (config.SmtpHost, config.SmtpPort, config.EmailFrom, config.EmailPassword, mail);
+                var text = Uri.UnescapeDataString(Regex.Unescape(body));
+
+                ExistZipFile(config.StaticPathFiles, config.NameZipFile);
+
+                IEmailSenderService mail = new EmailSenderService(name, config.EmailFrom);
+                mail.CreateMail(toMail, subject, text, $"{config.NameZipFile}.zip"); //config.EmailFrom
+                mail.SendMail(config.SmtpHost, config.SmtpPort, config.EmailPassword);
 
                 Console.WriteLine("Анкета отправлена на почту Додо");
             }
 
-
-
             // Получить запрашиваемый путь
+            //Console.WriteLine(request.Url!.AbsolutePath);
             string requestedPath = request.Url.LocalPath;
+
             // Проверить, запрашивается ли файл CSS или изображение
             if (requestedPath.EndsWith(".css"))
             {
                 // Отправить файл CSS
                 SendCSSFile(requestedPath);
+                Console.WriteLine(requestedPath);
             }
             else if (requestedPath.StartsWith("/images/"))
             {
@@ -124,6 +130,9 @@ public class HttpServer : IDisposable
             else
             {
                 // Отправка файл HTML
+                //var pathOfIndex = Path.Combine(config.StaticPathFiles, "index.html");
+                //Console.WriteLine(pathOfIndex);
+                Console.WriteLine(requestedPath);
                 SendHTMLFile();
             }
 
@@ -133,13 +142,25 @@ public class HttpServer : IDisposable
             Console.WriteLine("Запрос обработан");
         }
         server.Stop();
-
     }
+
+    public static void ParsingSteam()
+    {
+        MyDataContext db = new MyDataContext();
+
+        //Uri uri = new Uri("https://steamcommunity.com/market/");
+        //Regex reHref = new Regex(@"<a[^>]+href=""([^""]+)""[^>]+>");
+        //string html = new WebClient().DownloadString(uri);
+        //foreach (Match match in reHref.Matches(html))
+        //    Console.WriteLine(match.Groups[1].ToString());
+    }
+
 
     private async void SendHTMLFile()
     {
         CheckExistFileHTML();
         StreamReader site = new StreamReader(path);
+        //Console.WriteLine(site.ReadToEnd());
         byte[] buffer = Encoding.UTF8.GetBytes(site.ReadToEnd());
         response.ContentLength64 = buffer.Length;
 
@@ -272,118 +293,143 @@ public class HttpServer : IDisposable
     private void Stop()
     {
         server.Stop();
-        GC.SuppressFinalize(this);
+        // GC.SuppressFinalize(this);
     }
 
-    public void Dispose()
+    //public void Dispose()
+    //{
+    //    Stop();
+    //}
+
+    private static bool ExistZipFile(string path, string putInsidePath)
     {
-        Stop();
+        if (File.Exists($"{putInsidePath}.zip")) 
+            return true;
+        CreateZipFile(path, putInsidePath);
+        return false;
     }
 
+    public static void CreateZipFile(string path, string putInsidePath)
+    {
+        ZipFile.CreateFromDirectory(@"static", $@"ZipFile.zip"); // @"static", @"ZipFile.zip"
+    }
 
+    public static void DeleteZipFile(string path)
+    {
+        File.Delete(path);
+    }
 
-    // Получение JSON из тела запроса
-    //string jsonString;
-    //using (var reader = new StreamReader(request.InputStream, Encoding.UTF8))
-    //{
-    //    jsonString = reader.ReadToEnd();
-    //}
-
-    //// Десериализация JSON в объект
-    //dynamic data = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonString);
-
-    //// Выполнение необходимых действий с данными
-    //// ...
-
-    //Console.WriteLine(data.name);
-
-    //Response.Write("JSON получен успешно");
-
-
-
-    //if (request.HttpMethod.Equals("Post", StringComparison.OrdinalIgnoreCase) && request.Url.AbsolutePath == "/")
-    //{
-
-
-    //    // var name = request.Form["name"];
-
-    //    //using (StreamReader reader = new StreamReader(context.Request.InputStream,
-    //    //                                               context.Request.ContentEncoding))
-    //    //{
-    //    //    string requestBody = request.;//reader.ReadToEnd(); // Читаем тело запроса
-
-    //    //    // Десериализуем JSON-объект с отправленными данными
-    //    //    dynamic formData = Newtonsoft.Json.JsonConvert.DeserializeObject(requestBody);
-    //    //    string name = formData.name;
-    //    //    // Извлекаем значение поля input для имени
-
-
-
-
-    //    //    Console.WriteLine("Получено имя: " + name);
-    //    //    //Console.WriteLine();
-    //    //    // Выводим значение на консоль
-    //    //}
-    //}
-
-    //if (request.HttpMethod == "POST")
-    //{
-    //    // Прочитать данные из запроса
-    //    string content;
-    //    using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
-    //    {
-    //        content = await reader.ReadToEndAsync();
-    //    }
-
-    //    // Вывести данные на консоль
-    //    Console.WriteLine(content);
-    //}
-    //if (request.HttpMethod.Equals("Post", StringComparison.OrdinalIgnoreCase) && request.Url.AbsolutePath == "/")
-    //{
-    //    var stream = new StreamReader(request.InputStream);
-    //    Console.WriteLine(stream.ReadToEnd());
-    //}
-
-    //private static async Task SendEmailAsync()
-    //{
-    //    string email = "bulatsubuh@gmail.com";
-
-    //    string smptServerHost = "smtp.gmail.com";
-    //    ushort smptServerPort = 587;
-
-    //    string senderEmail = "somemail@gmail.com";
-    //    string passwordSender = "mypassword";
-
-    //    MailAddress from = new MailAddress(email, "Bulat");
-    //    MailAddress to = new MailAddress(email);
-
-    //    MailMessage m = new MailMessage(from, to);
-    //    m.Subject = "Тест";
-    //    m.Body = "Письмо-тест 2 работы smtp-клиента";
-
-    //    SmtpClient smtp = new SmtpClient(smptServerHost, smptServerPort);
-    //    smtp.Credentials = new NetworkCredential(senderEmail, passwordSender);
-    //    smtp.EnableSsl = true;
-
-    //    await smtp.SendMailAsync(m);
-
-    //    Console.WriteLine("Письмо отправлено");
-    //}
-
-    //public static async Task SendEmailAsync()
-    //{
-    //    MailAddress from = new MailAddress("bulatsubuh@gmail.com", "Bulatic");
-    //    MailAddress to = new MailAddress("bulatsubuh@gmail.com");
-    //    MailMessage m = new MailMessage(from, to);
-    //    m.Subject = "Тест";
-    //    m.Body = "Письмо-тест 2 работы smtp-клиента";
-    //    SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
-    //    smtp.Credentials = new NetworkCredential("somemail@gmail.com", "mypassword");
-    //    smtp.EnableSsl = true;
-    //    await smtp.SendMailAsync(m);
-    //    Console.WriteLine("Письмо отправлено");
-    //}
 }
+
+
+
+//var mail = EmailSenderService.CreateMail
+//    (name, config.EmailFrom, config.EmailTo, subject, body, $"{config.NameZipFile}.zip");
+//EmailSenderService.SendMail
+//    (config.SmtpHost, config.SmtpPort, config.EmailFrom, config.EmailPassword, mail);
+
+
+// Получение JSON из тела запроса
+//string jsonString;
+//using (var reader = new StreamReader(request.InputStream, Encoding.UTF8))
+//{
+//    jsonString = reader.ReadToEnd();
+//}
+
+//// Десериализация JSON в объект
+//dynamic data = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonString);
+
+//// Выполнение необходимых действий с данными
+//// ...
+
+//Console.WriteLine(data.name);
+
+//Response.Write("JSON получен успешно");
+
+
+
+//if (request.HttpMethod.Equals("Post", StringComparison.OrdinalIgnoreCase) && request.Url.AbsolutePath == "/")
+//{
+
+
+//    // var name = request.Form["name"];
+
+//    //using (StreamReader reader = new StreamReader(context.Request.InputStream,
+//    //                                               context.Request.ContentEncoding))
+//    //{
+//    //    string requestBody = request.;//reader.ReadToEnd(); // Читаем тело запроса
+
+//    //    // Десериализуем JSON-объект с отправленными данными
+//    //    dynamic formData = Newtonsoft.Json.JsonConvert.DeserializeObject(requestBody);
+//    //    string name = formData.name;
+//    //    // Извлекаем значение поля input для имени
+
+
+
+
+//    //    Console.WriteLine("Получено имя: " + name);
+//    //    //Console.WriteLine();
+//    //    // Выводим значение на консоль
+//    //}
+//}
+
+//if (request.HttpMethod == "POST")
+//{
+//    // Прочитать данные из запроса
+//    string content;
+//    using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
+//    {
+//        content = await reader.ReadToEndAsync();
+//    }
+
+//    // Вывести данные на консоль
+//    Console.WriteLine(content);
+//}
+//if (request.HttpMethod.Equals("Post", StringComparison.OrdinalIgnoreCase) && request.Url.AbsolutePath == "/")
+//{
+//    var stream = new StreamReader(request.InputStream);
+//    Console.WriteLine(stream.ReadToEnd());
+//}
+
+//private static async Task SendEmailAsync()
+//{
+//    string email = "bulatsubuh@gmail.com";
+
+//    string smptServerHost = "smtp.gmail.com";
+//    ushort smptServerPort = 587;
+
+//    string senderEmail = "somemail@gmail.com";
+//    string passwordSender = "mypassword";
+
+//    MailAddress from = new MailAddress(email, "Bulat");
+//    MailAddress to = new MailAddress(email);
+
+//    MailMessage m = new MailMessage(from, to);
+//    m.Subject = "Тест";
+//    m.Body = "Письмо-тест 2 работы smtp-клиента";
+
+//    SmtpClient smtp = new SmtpClient(smptServerHost, smptServerPort);
+//    smtp.Credentials = new NetworkCredential(senderEmail, passwordSender);
+//    smtp.EnableSsl = true;
+
+//    await smtp.SendMailAsync(m);
+
+//    Console.WriteLine("Письмо отправлено");
+//}
+
+//public static async Task SendEmailAsync()
+//{
+//    MailAddress from = new MailAddress("bulatsubuh@gmail.com", "Bulatic");
+//    MailAddress to = new MailAddress("bulatsubuh@gmail.com");
+//    MailMessage m = new MailMessage(from, to);
+//    m.Subject = "Тест";
+//    m.Body = "Письмо-тест 2 работы smtp-клиента";
+//    SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+//    smtp.Credentials = new NetworkCredential("somemail@gmail.com", "mypassword");
+//    smtp.EnableSsl = true;
+//    await smtp.SendMailAsync(m);
+//    Console.WriteLine("Письмо отправлено");
+//}
 
 
 

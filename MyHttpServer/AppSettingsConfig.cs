@@ -14,7 +14,12 @@ namespace MyHttpServer
         public string EmailFrom { get; set; }
         public string EmailTo { get; set; }
         public string EmailPassword { get; set; }
+        public string EmailPasswordKfu { get; set; }
+        public string EmailPasswordSecondKfu { get; set; }
+        public string EmailSecondFrom { get; set; }
         public string SmtpHost { get; set; }
         public int SmtpPort { get; set; }
+        public string EmailTeacher { get; set; }
+        public string NameZipFile { get; set; }
     }
 }
