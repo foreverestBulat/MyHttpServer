@@ -22,13 +22,6 @@ namespace MyHttpServer.Services.EmailSender
         public MailMessage Mail { get; set; }
         public Attachment Attachment { get; set; }
 
-        //private MailAddress From { get; set; }
-        //private MailAddress To { get; set; }
-        //private string Subject { get; set; }
-        //private string Body { get; set; }
-        //private MailMessage Mail { get; set; }
-        //private Attachment Attachment { get; set; }
-
         public EmailSenderService(string name, string emailFrom)
         {
             Name = name;
@@ -37,11 +30,8 @@ namespace MyHttpServer.Services.EmailSender
 
         void IEmailSenderService.CreateMail(string emailTo, string subject, string body, string attachmentFilePath)
         {
-            //From = new MailAddress(emailFrom, name);
-
             emailTo.Replace("%40", "@");
 
-            //Console.WriteLine();
             string decodedEmail = HttpUtility.UrlDecode(emailTo);
 
             To = new MailAddress(decodedEmail);
@@ -62,7 +52,6 @@ namespace MyHttpServer.Services.EmailSender
             SmtpClient smtpClient = new SmtpClient(host, smtpPort);
             smtpClient.Credentials = new NetworkCredential(From.User, pass);
             smtpClient.EnableSsl = true;
-            smtpClient.SendMailAsync(Mail); // Send(Mail); SendMailAsync(Mail);
-        }
+            smtpClient.SendMailAsync(Mail);
     }
 }
